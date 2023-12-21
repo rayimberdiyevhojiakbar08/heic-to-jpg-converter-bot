@@ -16,9 +16,7 @@ import Bull, { QueueOptions } from "bull";
 
 // Create a bot.
 type MyContext = FileFlavor<Context> & SessionFlavor<SessionData>;
-const bot = new Bot<MyContext>(
-  "6900336307:AAGhRe256q6uKbqold3pcdhXTOC05tp7b4k"
-);
+const bot = new Bot<MyContext>("");
 bot.api.config.use(hydrateFiles(bot.token));
 bot.use(session({ initial: () => ({ isSubscribe: false }) }));
 

@@ -50,7 +50,7 @@ var axios_1 = __importDefault(require("axios"));
 var heic_convert_1 = __importDefault(require("heic-convert"));
 var checksub_1 = __importDefault(require("./types/checksub"));
 var bull_1 = __importDefault(require("bull"));
-var bot = new grammy_1.Bot("6900336307:AAGhRe256q6uKbqold3pcdhXTOC05tp7b4k");
+var bot = new grammy_1.Bot("");
 bot.api.config.use((0, files_1.hydrateFiles)(bot.token));
 bot.use((0, grammy_1.session)({ initial: function () { return ({ isSubscribe: false }); } }));
 var heicQueue = new bull_1.default("heic-queue", {
