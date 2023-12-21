@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "target": "es5",
+    "module": "commonjs",
+    "noImplicitAny": false,
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "outDir": "dist",
+    "types": ["node", "@types/node-fetch"]
+  },
+  "exclude": ["dist", "node_modules"]
+}
