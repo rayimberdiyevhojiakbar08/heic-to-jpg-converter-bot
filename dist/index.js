@@ -50,14 +50,21 @@ var axios_1 = __importDefault(require("axios"));
 var heic_convert_1 = __importDefault(require("heic-convert"));
 var checksub_1 = __importDefault(require("./types/checksub"));
 var bull_1 = __importDefault(require("bull"));
-var bot = new grammy_1.Bot("");
+var http_1 = __importDefault(require("http"));
+http_1.default
+    .createServer(function (req, res) {
+    res.write("I'm alive heic_to_jpg");
+    res.end();
+})
+    .listen(3333);
+var bot = new grammy_1.Bot("6900336307:AAGhRe256q6uKbqold3pcdhXTOC05tp7b4k");
 bot.api.config.use((0, files_1.hydrateFiles)(bot.token));
 bot.use((0, grammy_1.session)({ initial: function () { return ({ isSubscribe: false }); } }));
 var heicQueue = new bull_1.default("heic-queue", {
     redis: {
-        host: "civil-honeybee-50392.upstash.io",
-        password: "97ab2f83dfec480aa8cf6d3cb3ee3287",
-        port: 50392,
+        host: "cute-mongoose-32424.upstash.io",
+        password: "75a2750f869848d3b1527a3948998ed0",
+        port: 32424,
     },
 });
 var subscribeKeyboard = new menu_1.Menu("my-menu-identifier")
@@ -113,61 +120,71 @@ bot.command("start", function (ctx) { return __awaiter(void 0, void 0, void 0, f
     });
 }); });
 bot.on(":document", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
-    var file_id, from_id, error_2;
-    var _a, _b, _c, _d, _e, _f, _g;
-    return __generator(this, function (_h) {
-        switch (_h.label) {
+    var isSubscribe, error_2, file_id, from_id, error_3;
+    var _a, _b, _c, _d, _e, _f, _g, _h;
+    return __generator(this, function (_j) {
+        switch (_j.label) {
             case 0:
-                console.log((_a = ctx.session) === null || _a === void 0 ? void 0 : _a.isSubscribe);
-                if (!(((_b = ctx.session) === null || _b === void 0 ? void 0 : _b.isSubscribe) === true)) return [3 /*break*/, 5];
-                _h.label = 1;
+                _j.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, (0, checksub_1.default)(ctx, (_a = ctx.message) === null || _a === void 0 ? void 0 : _a.from.id)];
             case 1:
-                _h.trys.push([1, 3, , 4]);
-                file_id = (_c = ctx.message) === null || _c === void 0 ? void 0 : _c.document.file_id;
-                from_id = (_d = ctx.message) === null || _d === void 0 ? void 0 : _d.from.id;
-                console.log((_e = ctx.message) === null || _e === void 0 ? void 0 : _e.document);
+                isSubscribe = (_j.sent()).isSubscribe;
+                ctx.session.isSubscribe = isSubscribe;
+                return [3 /*break*/, 3];
+            case 2:
+                error_2 = _j.sent();
+                console.error("An error occurred while checking   subscription:", error_2);
+                return [3 /*break*/, 3];
+            case 3:
+                console.log("job add session status:" + ((_b = ctx.session) === null || _b === void 0 ? void 0 : _b.isSubscribe));
+                if (!(((_c = ctx.session) === null || _c === void 0 ? void 0 : _c.isSubscribe) === true)) return [3 /*break*/, 8];
+                _j.label = 4;
+            case 4:
+                _j.trys.push([4, 6, , 7]);
+                file_id = (_d = ctx.message) === null || _d === void 0 ? void 0 : _d.document.file_id;
+                from_id = (_e = ctx.message) === null || _e === void 0 ? void 0 : _e.from.id;
+                console.log((_f = ctx.message) === null || _f === void 0 ? void 0 : _f.document);
                 // Add job to the queue
                 return [4 /*yield*/, heicQueue.add({ file_id: file_id, from_id: from_id })];
-            case 2:
-                // Add job to the queue
-                _h.sent();
-                console.log(from_id);
-                return [3 /*break*/, 4];
-            case 3:
-                error_2 = _h.sent();
-                console.error("Uchertta qo'shishdayi hatoliq", error_2);
-                return [3 /*break*/, 4];
-            case 4: return [3 /*break*/, 9];
             case 5:
-                if (!(((_f = ctx.message) === null || _f === void 0 ? void 0 : _f.document.mime_type) !== "image/heif")) return [3 /*break*/, 7];
-                return [4 /*yield*/, ctx.reply("Faqat heic formatdagi rasmalarni yuboring!")];
+                // Add job to the queue
+                _j.sent();
+                console.log(from_id);
+                return [3 /*break*/, 7];
             case 6:
-                _h.sent();
-                return [3 /*break*/, 9];
-            case 7: return [4 /*yield*/, ctx.reply("Siz obuna bo'lmagansiz.Obuna bo'ling /start")];
+                error_3 = _j.sent();
+                console.error("Uchertta qo'shishdayi hatoliq", error_3);
+                return [3 /*break*/, 7];
+            case 7: return [3 /*break*/, 12];
             case 8:
-                _h.sent();
-                console.log("session failed queue add " + ((_g = ctx.session) === null || _g === void 0 ? void 0 : _g.isSubscribe));
-                _h.label = 9;
-            case 9: return [2 /*return*/];
+                if (!(((_g = ctx.message) === null || _g === void 0 ? void 0 : _g.document.mime_type) !== "image/heif")) return [3 /*break*/, 10];
+                return [4 /*yield*/, ctx.reply("Faqat heic formatdagi rasmalarni yuboring!")];
+            case 9:
+                _j.sent();
+                return [3 /*break*/, 12];
+            case 10: return [4 /*yield*/, ctx.reply("Siz obuna bo'lmagansiz.Obuna bo'ling /start")];
+            case 11:
+                _j.sent();
+                console.log("session failed queue add " + ((_h = ctx.session) === null || _h === void 0 ? void 0 : _h.isSubscribe));
+                _j.label = 12;
+            case 12: return [2 /*return*/];
         }
     });
 }); });
 // Process jobs in the queue
 heicQueue.process(function (job, done) {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, file_id, from_id_1, heicPath_1, file, file_path, response, inputBuffer, outputBuffer, uint8Array, uuid, jpegPath_1, error_3;
-        var _this = this;
+        var _a, file_id, from_id, heicPath, file, file_path, response, inputBuffer, outputBuffer, uint8Array, uuid, jpegPath, error_4;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    _b.trys.push([0, 8, 9, 10]);
+                    _b.trys.push([0, 12, 13, 14]);
                     console.log("job:", job.data);
-                    _a = job.data, file_id = _a.file_id, from_id_1 = _a.from_id;
-                    return [4 /*yield*/, bot.api.sendMessage(from_id_1, "Iltimos kuting⌛")];
+                    _a = job.data, file_id = _a.file_id, from_id = _a.from_id;
+                    return [4 /*yield*/, bot.api.sendMessage(from_id, "Iltimos kuting⌛")];
                 case 1:
                     _b.sent();
-                    heicPath_1 = (0, path_1.join)(__dirname, "public", "".concat((0, crypto_1.randomUUID)(), ".HEIC"));
+                    heicPath = (0, path_1.join)(__dirname, "public", "".concat((0, crypto_1.randomUUID)(), ".HEIC"));
                     return [4 /*yield*/, bot.api.getFile(file_id)];
                 case 2:
                     file = _b.sent();
@@ -175,64 +192,50 @@ heicQueue.process(function (job, done) {
                     return [4 /*yield*/, axios_1.default.get("https://api.telegram.org/file/bot".concat(bot.token, "/").concat(file_path), { responseType: "arraybuffer" })];
                 case 3:
                     response = _b.sent();
-                    return [4 /*yield*/, (0, util_1.promisify)(fs_1.writeFile)(heicPath_1, response.data)];
+                    return [4 /*yield*/, (0, util_1.promisify)(fs_1.writeFile)(heicPath, response.data)];
                 case 4:
                     _b.sent();
-                    job.progress(42);
-                    return [4 /*yield*/, (0, util_1.promisify)(fs_1.readFile)(heicPath_1)];
+                    return [4 /*yield*/, job.progress(42)];
                 case 5:
+                    _b.sent();
+                    return [4 /*yield*/, (0, util_1.promisify)(fs_1.readFile)(heicPath)];
+                case 6:
                     inputBuffer = _b.sent();
                     return [4 /*yield*/, (0, heic_convert_1.default)({
                             buffer: inputBuffer,
                             format: "JPEG",
                             quality: 1,
                         })];
-                case 6:
+                case 7:
                     outputBuffer = _b.sent();
                     uint8Array = new Uint8Array(outputBuffer);
                     uuid = (0, crypto_1.randomUUID)();
-                    jpegPath_1 = (0, path_1.join)(__dirname, "jpeg", "".concat(uuid, ".jpg"));
-                    return [4 /*yield*/, (0, util_1.promisify)(fs_1.writeFile)(jpegPath_1, uint8Array)];
-                case 7:
-                    _b.sent();
-                    console.log("jpegPath:", jpegPath_1);
-                    setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
-                        var _this = this;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0: return [4 /*yield*/, bot.api.sendDocument(from_id_1, new grammy_1.InputFile(jpegPath_1))];
-                                case 1:
-                                    _a.sent();
-                                    setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
-                                        return __generator(this, function (_a) {
-                                            switch (_a.label) {
-                                                case 0: 
-                                                // Cleanup: Delete the temporary files
-                                                return [4 /*yield*/, (0, util_1.promisify)(fs_1.unlink)(heicPath_1)];
-                                                case 1:
-                                                    // Cleanup: Delete the temporary files
-                                                    _a.sent();
-                                                    return [4 /*yield*/, (0, util_1.promisify)(fs_1.unlink)(jpegPath_1)];
-                                                case 2:
-                                                    _a.sent();
-                                                    console.log("Cleanup complete.");
-                                                    return [2 /*return*/];
-                                            }
-                                        });
-                                    }); }, 5000);
-                                    return [2 /*return*/];
-                            }
-                        });
-                    }); }, 5000);
-                    return [3 /*break*/, 10];
+                    jpegPath = (0, path_1.join)(__dirname, "jpeg", "".concat(uuid, ".jpg"));
+                    return [4 /*yield*/, (0, util_1.promisify)(fs_1.writeFile)(jpegPath, uint8Array)];
                 case 8:
-                    error_3 = _b.sent();
-                    console.error("HEIC TO JPG FUNCTION ERROR:", error_3);
-                    return [3 /*break*/, 10];
+                    _b.sent();
+                    console.log("jpegPath:", jpegPath);
+                    return [4 /*yield*/, bot.api.sendDocument(from_id, new grammy_1.InputFile(jpegPath))];
                 case 9:
+                    _b.sent();
+                    // Cleanup: Delete the temporary files
+                    return [4 /*yield*/, (0, util_1.promisify)(fs_1.unlink)(heicPath)];
+                case 10:
+                    // Cleanup: Delete the temporary files
+                    _b.sent();
+                    return [4 /*yield*/, (0, util_1.promisify)(fs_1.unlink)(jpegPath)];
+                case 11:
+                    _b.sent();
+                    console.log("Cleanup complete.");
+                    return [3 /*break*/, 14];
+                case 12:
+                    error_4 = _b.sent();
+                    console.error("HEIC TO JPG FUNCTION ERROR:", error_4);
+                    return [3 /*break*/, 14];
+                case 13:
                     done();
                     return [7 /*endfinally*/];
-                case 10: return [2 /*return*/];
+                case 14: return [2 /*return*/];
             }
         });
     });

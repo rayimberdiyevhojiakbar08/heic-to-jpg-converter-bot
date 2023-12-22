@@ -3,7 +3,7 @@ import { Menu } from "@grammyjs/menu";
 import { FileFlavor, hydrateFiles } from "@grammyjs/files";
 
 import { promisify } from "util";
-import fs, { writeFile, readFile, unlink, createReadStream } from "fs";
+import { writeFile, readFile, unlink } from "fs";
 import { join } from "path";
 import { randomUUID } from "crypto";
 import axios from "axios";
@@ -12,19 +12,30 @@ import heicConvert from "heic-convert";
 import check_sub from "./types/checksub";
 import { SessionData } from "./interfaces/sessioninterface";
 import { sendData } from "./interfaces/sendData.interface";
-import Bull, { QueueOptions } from "bull";
+import Bull from "bull";
+
+import http from "http";
+
+http
+  .createServer((req, res) => {
+    res.write("I'm alive heic_to_jpg");
+    res.end();
+  })
+  .listen(3333);
 
 // Create a bot.
 type MyContext = FileFlavor<Context> & SessionFlavor<SessionData>;
-const bot = new Bot<MyContext>("");
+const bot = new Bot<MyContext>(
+  "6900336307:AAGhRe256q6uKbqold3pcdhXTOC05tp7b4k"
+);
 bot.api.config.use(hydrateFiles(bot.token));
 bot.use(session({ initial: () => ({ isSubscribe: false }) }));
 
 const heicQueue = new Bull<sendData>("heic-queue", {
   redis: {
-    host: "civil-honeybee-50392.upstash.io",
-    password: "97ab2f83dfec480aa8cf6d3cb3ee3287",
-    port: 50392,
+    host: "cute-mongoose-32424.upstash.io",
+    password: "75a2750f869848d3b1527a3948998ed0",
+    port: 32424,
   },
 });
 
@@ -67,7 +78,15 @@ bot.command("start", async (ctx) => {
 });
 
 bot.on(":document", async (ctx) => {
-  console.log(ctx.session?.isSubscribe);
+  try {
+    // Check subscription status
+    const { isSubscribe } = await check_sub(ctx, ctx.message?.from.id);
+    ctx.session.isSubscribe = isSubscribe;
+  } catch (error) {
+    console.error("An error occurred while checking   subscription:", error);
+    // Log the error details or handle it appropriately
+  }
+  console.log("job add session status:" + ctx.session?.isSubscribe);
   if (ctx.session?.isSubscribe === true) {
     try {
       const file_id = ctx.message?.document.file_id;
@@ -105,7 +124,7 @@ heicQueue.process(async function (job, done) {
     );
 
     await promisify(writeFile)(heicPath, response.data);
-    job.progress(42);
+    await job.progress(42);
     // Convert the file to JPEG
     const inputBuffer = await promisify(readFile)(heicPath);
     const outputBuffer = await heicConvert({
@@ -114,6 +133,7 @@ heicQueue.process(async function (job, done) {
       quality: 1,
     });
     const uint8Array = new Uint8Array(outputBuffer);
+    await promisify(unlink)(heicPath);
 
     // Save the JPEG file
     const uuid = randomUUID();
@@ -121,17 +141,11 @@ heicQueue.process(async function (job, done) {
     await promisify(writeFile)(jpegPath, uint8Array);
 
     console.log("jpegPath:", jpegPath);
+    await bot.api.sendDocument(from_id, new InputFile(jpegPath));
+    await promisify(unlink)(jpegPath);
 
-    setTimeout(async () => {
-      await bot.api.sendDocument(from_id, new InputFile(jpegPath));
-
-      setTimeout(async () => {
-        // Cleanup: Delete the temporary files
-        await promisify(unlink)(heicPath);
-        await promisify(unlink)(jpegPath);
-        console.log("Cleanup complete.");
-      }, 5000);
-    }, 5000);
+    // Cleanup: Delete the temporary files
+    console.log("Cleanup complete.");
   } catch (error) {
     console.error("HEIC TO JPG FUNCTION ERROR:", error);
   } finally {

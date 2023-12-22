@@ -16,6 +16,7 @@
     "@grammyjs/files": "^1.0.4",
     "@grammyjs/menu": "^1.2.1",
     "@grammyjs/runner": "^2.0.3",
+    "@types/heic-convert": "^1.2.3",
     "@types/node": "^20.10.4",
     "axios": "^1.6.2",
     "bull": "^4.11.5",
