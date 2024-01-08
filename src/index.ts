@@ -26,16 +26,16 @@ http
 // Create a bot.
 type MyContext = FileFlavor<Context> & SessionFlavor<SessionData>;
 const bot = new Bot<MyContext>(
-  "6900336307:AAGhRe256q6uKbqold3pcdhXTOC05tp7b4k"
+  ""
 );
 bot.api.config.use(hydrateFiles(bot.token));
 bot.use(session({ initial: () => ({ isSubscribe: false }) }));
 
 const heicQueue = new Bull<sendData>("heic-queue", {
   redis: {
-    host: "cute-mongoose-32424.upstash.io",
-    password: "75a2750f869848d3b1527a3948998ed0",
-    port: 32424,
+    host: "",
+    password: "",
+    port: "",
   },
 });
 
